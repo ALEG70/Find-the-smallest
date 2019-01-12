@@ -1,47 +1,72 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 class FindTheSmallest {
 
 	public static void main(String [] args){
-		ArrayList list = listHelper.numberToArrayList(12758);
-		listHelper.getDiffNumbers(list, 3);
+		ArrayList<Integer> list = listHelper.numberToArrayList(100000653780006L);
+		execute(list);
 	}
     
+	public static void execute(ArrayList<Integer> list){
+		int size = list.size();
+		Long[] result = {listHelper.listToInteger(list),0L,0L};
+		for (int i = 0; i < size; i++){
+			Long[] arr = listHelper.getDiffNumbers(list, i);
+			if (arr[0] != null)
+			if (arr[0] < result[0] || (arr[0] == result[0] && arr[1] < result[1]) || (arr[0] == result[0] && arr[1] == result[1] && arr[2] < result[2])) 
+			{result = arr;}	
+		}
+		System.out.println("Minimal number from " +listHelper.listToInteger(list) +  " is " + result[0] + " get " + list.get(result[1].intValue()) + " and set to " + result[2] + " position");
+	}
+	
 }
+
 
 class listHelper{
 	
-	
-	public static void getDiffNumbers(ArrayList<Integer> list, int position){
-		int min = listToInteger(list);
-		int minTo = 0;
-		int digit = list.get(list.size()-position);
-		//System.out.println(list+" : "+digit);
+	public static Long[] getDiffNumbers(ArrayList<Integer> list, int position){ //Magic
+		Long[] result = new Long[3];
+		long min = listToInteger(list);
+		int digit = list.get(position);
 		for (int i = 0; i < list.size(); i++){
 			ArrayList<Integer> newList = new ArrayList<Integer>(list);
-			newList.remove(list.size()-position);
-			newList.add(i, digit);
-			if (listToInteger(newList) < min) {min = listToInteger(newList); minTo = list.size() - i;}
-			//System.out.println(listToInteger(newList) + " put "+digit+" to " + (list.size() - i) + " from " + (list.size()-position));
+			newList.remove(position);// Delete from old place
+			newList.add(i, digit);// Set to new place 
+			if (listToInteger(newList) < min) {// Make new int & compare with smallest one
+				min = listToInteger(newList);
+				result[0] = min;
+				result[1] = (long)position;
+				result[2] = (long)i;
+				//System.out.println("Number from to ");
+				//System.out.println(result[0] + " " + result[1] + " " + result[2]);
+			}
 		}
-		System.out.println("Min : " + min +" digit "+ digit + " from " + (list.size()-position) + " min to " + minTo);
+		return result;
 	} 
 	
-	public static ArrayList<Integer> numberToArrayList(int num){
+	public static ArrayList<Integer> numberToArrayList(long num){//Make List from int
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		int number = num;
-		for(;number%10 > 0;number = number/10){
-			list.add(number%10);
+		while(num > 0){
+			list.add((int)(num%10));
+			num = num/10;
 		}
+		Collections.reverse(list);
+		
+		System.out.println("Collection is: ");
+		System.out.println(list);
+		
 		return list;
 	}
-	
-	public static int listToInteger(ArrayList<Integer> list){
-		int result = 0;
-		for(int i = 0, x = 1 ; i < list.size(); i++, x = x*10){
-			//System.out.println(list.get(i) + " : " + x + " : " + result);
-			result += list.get(i) * x;
+
+	public static long listToInteger(ArrayList<Integer> list){//Make int from List
+		long result = 0;
+		long x = 1;
+		for(int i = list.size() - 1; i >= 0; i--, x = x*10){
+			//System.out.println("(x)"+x+" * "+"(digit)"+list.get(i)+" = "+(long)list.get(i) * x);
+			result += (long)list.get(i) * x;
 		}
+		
 		return result;
 	}
 }
